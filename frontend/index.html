@@ -1,0 +1,646 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+    <title>HireMeAI</title>
+
+    <style>
+        * {
+            box-sizing: border-box;
+            margin: 0;
+            padding: 0;
+        }
+
+        body {
+            min-height: 100vh;
+            background:
+                radial-gradient(circle at center, #082a3a 0%, #02070b 45%, #010304 100%);
+            color: #dffaff;
+            font-family: "Segoe UI", Arial, sans-serif;
+            overflow: hidden;
+        }
+
+        body::before {
+            content: "";
+            position: fixed;
+            inset: 0;
+            background:
+                linear-gradient(rgba(0, 220, 255, 0.025) 1px, transparent 1px),
+                linear-gradient(90deg, rgba(0, 220, 255, 0.025) 1px, transparent 1px);
+            background-size: 45px 45px;
+            pointer-events: none;
+        }
+
+        /* HEADER */
+
+        .header {
+            position: fixed;
+            top: 0;
+            left: 0;
+            right: 0;
+
+            height: 80px;
+
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+
+            padding: 0 45px;
+
+            border-bottom: 1px solid rgba(0, 220, 255, 0.18);
+
+            background: rgba(1, 8, 13, 0.65);
+            backdrop-filter: blur(15px);
+
+            z-index: 10;
+        }
+
+        .brand {
+            display: flex;
+            align-items: center;
+            gap: 15px;
+        }
+
+        .brand-orb {
+            width: 42px;
+            height: 42px;
+
+            border: 2px solid #00d9ff;
+            border-radius: 50%;
+
+            display: flex;
+            align-items: center;
+            justify-content: center;
+
+            color: #00d9ff;
+
+            box-shadow:
+                0 0 12px rgba(0, 217, 255, 0.8),
+                inset 0 0 12px rgba(0, 217, 255, 0.3);
+
+            animation: pulse 2s infinite;
+        }
+
+        .brand-name {
+            font-size: 21px;
+            letter-spacing: 4px;
+            font-weight: 600;
+        }
+
+        .status {
+            display: flex;
+            align-items: center;
+            gap: 9px;
+
+            font-size: 12px;
+            letter-spacing: 2px;
+
+            color: #65f7ff;
+        }
+
+        .status-dot {
+            width: 8px;
+            height: 8px;
+
+            border-radius: 50%;
+            background: #00eaff;
+
+            box-shadow: 0 0 12px #00eaff;
+        }
+
+        /* MAIN */
+
+        .main {
+            height: 100vh;
+
+            display: flex;
+            flex-direction: column;
+
+            padding-top: 100px;
+            padding-bottom: 35px;
+        }
+
+        .hero {
+            text-align: center;
+            padding: 20px;
+        }
+
+        .hero h1 {
+            font-size: clamp(35px, 5vw, 65px);
+            letter-spacing: 8px;
+
+            color: #e8fcff;
+
+            text-shadow:
+                0 0 10px rgba(0, 229, 255, 0.5),
+                0 0 35px rgba(0, 229, 255, 0.25);
+        }
+
+        .hero p {
+            margin-top: 10px;
+
+            color: #5f9eab;
+
+            font-size: 13px;
+            letter-spacing: 4px;
+            text-transform: uppercase;
+        }
+
+        /* ARC */
+
+        .reactor {
+            width: 145px;
+            height: 145px;
+
+            margin: 12px auto 5px;
+
+            border-radius: 50%;
+
+            border: 1px solid rgba(0, 229, 255, 0.5);
+
+            display: flex;
+            align-items: center;
+            justify-content: center;
+
+            position: relative;
+
+            box-shadow:
+                0 0 30px rgba(0, 229, 255, 0.18),
+                inset 0 0 30px rgba(0, 229, 255, 0.1);
+
+            animation: reactorPulse 3s infinite;
+        }
+
+        .reactor::before {
+            content: "";
+
+            width: 82px;
+            height: 82px;
+
+            border-radius: 50%;
+
+            border: 2px solid #00dfff;
+
+            box-shadow:
+                0 0 20px #00dfff,
+                inset 0 0 20px rgba(0, 223, 255, 0.4);
+        }
+
+        .reactor::after {
+            content: "";
+
+            position: absolute;
+
+            width: 170px;
+            height: 170px;
+
+            border-radius: 50%;
+
+            border-top: 2px solid transparent;
+            border-right: 2px solid #00dfff;
+
+            animation: rotate 5s linear infinite;
+        }
+
+        /* CHAT */
+
+        .chat {
+            width: min(900px, 92%);
+            flex: 1;
+
+            margin: 10px auto;
+
+            overflow-y: auto;
+
+            padding: 20px 10px 120px;
+
+            scrollbar-width: thin;
+            scrollbar-color: #087c91 transparent;
+        }
+
+        .message {
+            max-width: 75%;
+
+            padding: 14px 18px;
+
+            margin-bottom: 16px;
+
+            line-height: 1.5;
+
+            font-size: 14px;
+
+            border-radius: 12px;
+
+            animation: appear 0.3s ease;
+        }
+
+        .ai {
+            margin-right: auto;
+
+            background: rgba(0, 160, 190, 0.08);
+
+            border-left: 2px solid #00dfff;
+
+            box-shadow: 0 0 20px rgba(0, 223, 255, 0.05);
+        }
+
+        .user {
+            margin-left: auto;
+
+            background: rgba(0, 223, 255, 0.12);
+
+            border-right: 2px solid #00dfff;
+
+            text-align: right;
+        }
+
+        .label {
+            font-size: 10px;
+            letter-spacing: 2px;
+            color: #00dfff;
+            margin-bottom: 6px;
+        }
+
+        /* INPUT */
+
+        .input-area {
+            position: fixed;
+
+            bottom: 25px;
+            left: 50%;
+
+            transform: translateX(-50%);
+
+            width: min(850px, 90%);
+
+            display: flex;
+            gap: 10px;
+
+            padding: 10px;
+
+            background: rgba(2, 14, 21, 0.88);
+
+            border: 1px solid rgba(0, 223, 255, 0.3);
+
+            border-radius: 16px;
+
+            backdrop-filter: blur(20px);
+
+            box-shadow:
+                0 0 30px rgba(0, 223, 255, 0.08);
+        }
+
+        #question {
+            flex: 1;
+
+            background: transparent;
+
+            border: none;
+            outline: none;
+
+            color: #e7fcff;
+
+            font-size: 15px;
+
+            padding: 14px;
+        }
+
+        #question::placeholder {
+            color: #52747c;
+        }
+
+        #send {
+            width: 52px;
+            height: 52px;
+
+            border: 1px solid #00dfff;
+
+            background: rgba(0, 223, 255, 0.08);
+
+            color: #00dfff;
+
+            border-radius: 12px;
+
+            cursor: pointer;
+
+            font-size: 20px;
+
+            transition: 0.2s;
+        }
+
+        #send:hover {
+            background: #00dfff;
+            color: #001014;
+
+            box-shadow: 0 0 20px #00dfff;
+        }
+
+        #send:disabled {
+            opacity: 0.4;
+            cursor: not-allowed;
+        }
+
+        /* THINKING */
+
+        .thinking {
+            display: none;
+
+            margin-bottom: 15px;
+
+            color: #00dfff;
+
+            font-size: 12px;
+
+            letter-spacing: 2px;
+        }
+
+        .thinking span {
+            animation: blink 1s infinite;
+        }
+
+        /* ANIMATIONS */
+
+        @keyframes pulse {
+            0%, 100% {
+                box-shadow: 0 0 12px rgba(0, 217, 255, 0.5);
+            }
+
+            50% {
+                box-shadow: 0 0 25px rgba(0, 217, 255, 1);
+            }
+        }
+
+        @keyframes reactorPulse {
+            0%, 100% {
+                transform: scale(1);
+            }
+
+            50% {
+                transform: scale(1.04);
+            }
+        }
+
+        @keyframes rotate {
+            from {
+                transform: rotate(0deg);
+            }
+
+            to {
+                transform: rotate(360deg);
+            }
+        }
+
+        @keyframes appear {
+            from {
+                opacity: 0;
+                transform: translateY(8px);
+            }
+
+            to {
+                opacity: 1;
+                transform: translateY(0);
+            }
+        }
+
+        @keyframes blink {
+            0%, 100% {
+                opacity: 0.3;
+            }
+
+            50% {
+                opacity: 1;
+            }
+        }
+
+        @media (max-width: 600px) {
+
+            .header {
+                padding: 0 20px;
+            }
+
+            .brand-name {
+                font-size: 16px;
+            }
+
+            .hero h1 {
+                letter-spacing: 5px;
+            }
+
+            .message {
+                max-width: 88%;
+            }
+        }
+    </style>
+</head>
+
+<body>
+
+    <header class="header">
+
+        <div class="brand">
+
+            <div class="brand-orb">
+                ◉
+            </div>
+
+            <div class="brand-name">
+                HIREMEAI
+            </div>
+
+        </div>
+
+        <div class="status">
+            <div class="status-dot"></div>
+            ONLINE
+        </div>
+
+    </header>
+
+
+    <main class="main">
+
+        <section class="hero">
+
+            <div class="reactor"></div>
+
+            <h1>JARVIS</h1>
+
+            <p>AI Candidate Intelligence System</p>
+
+        </section>
+
+
+        <section class="chat" id="chat">
+
+            <div class="message ai">
+
+                <div class="label">
+                    HIREMEAI
+                </div>
+
+                Hello. I am the candidate's AI assistant.
+                Ask me anything about the candidate's resume.
+
+            </div>
+
+            <div class="thinking" id="thinking">
+                ANALYZING<span>...</span>
+            </div>
+
+        </section>
+
+    </main>
+
+
+    <div class="input-area">
+
+        <input
+            id="question"
+            type="text"
+            placeholder="Ask me about the candidate..."
+            autocomplete="off"
+        >
+
+        <button id="send">
+            ➤
+        </button>
+
+    </div>
+
+
+    <script>
+
+        const questionInput = document.getElementById("question");
+        const sendButton = document.getElementById("send");
+        const chat = document.getElementById("chat");
+        const thinking = document.getElementById("thinking");
+
+
+        function addMessage(text, type) {
+
+            const message = document.createElement("div");
+
+            message.className = `message ${type}`;
+
+            const label = document.createElement("div");
+
+            label.className = "label";
+
+            label.textContent =
+                type === "user"
+                    ? "YOU"
+                    : "HIREMEAI";
+
+
+            const content = document.createElement("div");
+
+            content.textContent = text;
+
+
+            message.appendChild(label);
+            message.appendChild(content);
+
+            chat.insertBefore(message, thinking);
+
+            chat.scrollTop = chat.scrollHeight;
+        }
+
+
+        async function sendQuestion() {
+
+            const question = questionInput.value.trim();
+
+            if (!question) {
+                return;
+            }
+
+
+            addMessage(question, "user");
+
+            questionInput.value = "";
+
+            sendButton.disabled = true;
+
+            thinking.style.display = "block";
+
+            chat.scrollTop = chat.scrollHeight;
+
+
+            try {
+
+                const response = await fetch(
+                    "http://127.0.0.1:8000/chat",
+                    {
+                        method: "POST",
+
+                        headers: {
+                            "Content-Type": "application/json"
+                        },
+
+                        body: JSON.stringify({
+                            question: question
+                        })
+                    }
+                );
+
+
+                if (!response.ok) {
+
+                    throw new Error(
+                        `Server error: ${response.status}`
+                    );
+
+                }
+
+
+                const data = await response.json();
+
+                addMessage(data.answer, "ai");
+
+
+            } catch (error) {
+
+                addMessage(
+                    "I couldn't connect to the HireMeAI backend. Make sure FastAPI is running.",
+                    "ai"
+                );
+
+                console.error(error);
+
+            } finally {
+
+                thinking.style.display = "none";
+
+                sendButton.disabled = false;
+
+                questionInput.focus();
+
+            }
+        }
+
+
+        sendButton.addEventListener(
+            "click",
+            sendQuestion
+        );
+
+
+        questionInput.addEventListener(
+            "keydown",
+            function(event) {
+
+                if (event.key === "Enter") {
+
+                    sendQuestion();
+
+                }
+
+            }
+        );
+
+    </script>
+
+</body>
+</html>
